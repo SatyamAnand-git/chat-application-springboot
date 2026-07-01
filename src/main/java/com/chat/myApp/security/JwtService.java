@@ -43,7 +43,15 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+    public boolean isTokenValid(String token) {
 
+        try {
+            extractAllClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     public boolean isTokenValid(String token, String email) {
         return extractEmail(token).equals(email)
                 && !isTokenExpired(token);
@@ -54,4 +62,5 @@ public class JwtService {
                 .getExpiration()
                 .before(new Date());
     }
+
 }
