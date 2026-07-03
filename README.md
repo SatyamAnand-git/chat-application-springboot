@@ -124,15 +124,13 @@ Conversation History Loaded
 
 ### Login Page
 
-> Add Screenshot Here
+<img width="958" height="493" alt="image" src="https://github.com/user-attachments/assets/b13d78f1-1f35-4501-b941-e9ea285bb71c" />
 
----
 
 ### Chat Screen
 
-> Add Screenshot Here
+<img width="1600" height="999" alt="WhatsApp Image 2026-07-03 at 8 20 09 PM" src="https://github.com/user-attachments/assets/2b679fb4-cac5-4a1c-9177-d4ff132ee214" />
 
----
 
 ## 📌 Future Improvements
 
@@ -154,13 +152,9 @@ Conversation History Loaded
 GitHub:
 https://github.com/SatyamAnand-git
 
-LinkedIn:
-(Add your LinkedIn profile)
 
----
 
 ## ⭐ If you found this project useful
 
 Give it a ⭐ on GitHub.
 
-<img width="1600" height="999" alt="WhatsApp Image 2026-07-03 at 8 20 09 PM" src="https://github.com/user-attachments/assets/2b679fb4-cac5-4a1c-9177-d4ff132ee214" />
