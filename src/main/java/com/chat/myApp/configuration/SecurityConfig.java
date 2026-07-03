@@ -37,18 +37,18 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
-                                "/index.html",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/chat/**",
+                                "/login.html",
+                                "/chat.html",
                                 "/auth/register",
-                                "/auth/login"
+                                "/auth/login",
+                                "/chat/**",
+                                "/js/**",
+                                "/css/**"
                         ).permitAll()
+
                         .anyRequest()
                         .authenticated())
 

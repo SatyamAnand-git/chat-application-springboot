@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Login</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+        }
+
+        .container{
+
+            width:350px;
+            margin:120px auto;
+            background:white;
+            padding:25px;
+            border-radius:10px;
+            box-shadow:0 0 10px gray;
+
+        }
+
+        h2{
+
+            text-align:center;
+
+        }
+
+        input{
+
+            width:95%;
+            padding:10px;
+            margin-top:10px;
+
+        }
+
+        button{
+
+            width:100%;
+            padding:10px;
+            margin-top:20px;
+            cursor:pointer;
+
+        }
+
+        #error{
+
+            color:red;
+            text-align:center;
+            margin-top:15px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Login</h2>
+
+    <input
+            id="email"
+            placeholder="Email">
+
+    <input
+            id="password"
+            type="password"
+            placeholder="Password">
+
+    <button onclick="login()">
+
+        Login
+
+    </button>
+
+    <p id="error"></p>
+
+</div>
+
+<script>
+
+    async function login(){
+
+        const email=document.getElementById("email").value;
+
+        const password=document.getElementById("password").value;
+
+        const response=await fetch("/auth/login",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                email:email,
+                password:password
+
+            })
+
+        });
+
+        if(response.ok){
+
+            const token=await response.text();
+
+            localStorage.setItem("token",token);
+
+            localStorage.setItem("email",email);
+
+            window.location.href="chat.html";
+
+        }
+        else{
+
+            document.getElementById("error").innerHTML="Invalid Credentials";
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>

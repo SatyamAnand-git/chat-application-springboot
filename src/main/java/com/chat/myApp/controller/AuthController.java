@@ -25,6 +25,8 @@ public class AuthController {
     public ResponseEntity<String> login(
             @RequestBody LoginRequest request) {
 
+        System.out.println("LOGIN API HIT");
+
         return ResponseEntity.ok(
                 authService.login(request)
         );

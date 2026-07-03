@@ -3,6 +3,7 @@
 
 <head>
 
+
     <title>Chat Application</title>
 
     <style>
@@ -60,14 +61,13 @@
 <div class="container">
 
     <h2>Real Time Chat</h2>
+    <h3 id="loggedUser"></h3>
 
-    <input
-            id="sender"
-            placeholder="Your Name">
 
     <input
             id="receiver"
-            placeholder="Receiver">
+            placeholder="Receiver"
+            onchange="loadHistory()">
 
     <div id="messages"></div>
 
@@ -92,17 +92,19 @@
     // Connect to WebSocket
     function connect() {
 
-        const socket = new SockJS('/chat');
+        let socket = new SockJS('/chat');
 
         stompClient = Stomp.over(socket);
 
         stompClient.connect(
-            {},
+            {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            },
             function () {
 
                 console.log("Connected!");
 
-                stompClient.subscribe("/topic/messages", function (message) {
+                stompClient.subscribe("/user/queue/messages", function(message){
 
                     showMessage(JSON.parse(message.body));
 
@@ -114,8 +116,7 @@
 
     // Send Message
     function sendMessage() {
-
-        const sender = document.getElementById("sender").value;
+        const sender = localStorage.getItem("email");
         const receiver = document.getElementById("receiver").value;
         const content = document.getElementById("message").value;
 
@@ -132,31 +133,49 @@
     }
 
     // Display Message
-    function showMessage(message) {
+    function showMessage(message){
 
-        const messages = document.getElementById("messages");
+        const sender =
+            message.sender || message.senderEmail;
 
-        messages.innerHTML += `
-        <div class="message">
-            <b>${message.sender}</b><br>
-            ${message.content}
-        </div>
-    `;
+        const messages =
+            document.getElementById("messages");
+
+        messages.innerHTML +=
+            "<div class='message'>"
+            + "<b>"
+            + sender
+            + "</b><br>"
+            + message.content
+            + "</div>";
 
         messages.scrollTop = messages.scrollHeight;
     }
     // Load Chat History
     async function loadHistory() {
 
-        const receiver = document.getElementById("receiver").value;
+        const receiver =
+            document.getElementById("receiver").value;
 
-        if (receiver === "") return;
+        if(receiver==="") return;
 
-        const response = await fetch("/messages/history/" + receiver);
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            "/messages/history/" + receiver,
+            {
+                headers:{
+                    "Authorization":"Bearer " + token
+                }
+            }
+        );
 
         const history = await response.json();
 
-        document.getElementById("messages").innerHTML = "";
+        const messages =
+            document.getElementById("messages");
+
+        messages.innerHTML="";
 
         history.forEach(showMessage);
 
@@ -164,6 +183,11 @@
 
     // Connect automatically
     connect();
+
+    document.getElementById("loggedUser").innerHTML =
+        "Logged in as : " +
+        localStorage.getItem("email");
+
     document
         .getElementById("message")
         .addEventListener("keypress", function(event){

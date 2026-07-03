@@ -31,9 +31,15 @@ public class ChatController {
                 .build();
 
         messageRepository.save(message);
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getReceiver(),
+                "/queue/messages",
+                chatMessage
+        );
 
-        messagingTemplate.convertAndSend(
-                "/topic/messages",
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getSender(),
+                "/queue/messages",
                 chatMessage
         );
     }
