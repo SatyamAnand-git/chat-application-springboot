@@ -21,6 +21,14 @@
             border-radius: 10px;
             box-shadow: 0 0 10px gray;
         }
+        .chat-header{
+            margin:15px 0;
+            padding:12px;
+            background:#f5f5f5;
+            border-radius:8px;
+            font-weight:bold;
+            color:#444;
+        }
 
         h2 {
             text-align: center;
@@ -49,10 +57,56 @@
         }
 
         .message {
+            display: flex;
             margin-bottom: 10px;
-            padding: 8px;
-            background: #e8f5e9;
-            border-radius: 5px;
+        }
+
+        .sent {
+            justify-content: flex-end;
+        }
+
+        .received {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .sent .bubble {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .received .bubble {
+            background: #e5e5e5;
+            color: black;
+        }
+        .header{
+            display:flex;
+            justify-content:flex-end;
+            margin-bottom:10px;
+        }
+
+        .logout-btn{
+            background:#dc3545;
+            color:white;
+            border:none;
+            padding:8px 16px;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        .logout-btn:hover{
+            background:#b52b3a;
+        }
+        .time{
+            margin-top:6px;
+            font-size:12px;
+            opacity:0.7;
+            text-align:right;
         }
 
     </style>
@@ -62,18 +116,26 @@
 
     <h2>Real Time Chat</h2>
     <h3 id="loggedUser"></h3>
-
+    <div class="header">
+        <button onclick="logout()" class="logout-btn">
+            Logout
+        </button>
+    </div>
 
     <input
             id="receiver"
             placeholder="Receiver"
+            oninput="updateChatHeader()"
             onchange="loadHistory()">
 
+    <div id="chatHeader" class="chat-header">
+        Select a user to start chatting
+    </div>
     <div id="messages"></div>
-
     <input
             id="message"
-            placeholder="Type your message...">
+            placeholder="Type your message..."
+            onkeypress="handleKeyPress(event)">
 
     <button onclick="sendMessage()">
 
@@ -129,25 +191,40 @@
         }));
 
         document.getElementById("message").value = "";
+        document.getElementById("message").focus();
 
     }
 
     // Display Message
-    function showMessage(message){
+    function showMessage(message) {
 
-        const sender =
-            message.sender || message.senderEmail;
+        const messages = document.getElementById("messages");
 
-        const messages =
-            document.getElementById("messages");
+        const loggedInUser = localStorage.getItem("email");
 
-        messages.innerHTML +=
-            "<div class='message'>"
-            + "<b>"
-            + sender
-            + "</b><br>"
-            + message.content
-            + "</div>";
+        const sender = message.sender || message.senderEmail;
+
+        const messageClass =
+            sender === loggedInUser ? "sent" : "received";
+
+        let time = "";
+
+        if(message.timestamp){
+            time = new Date(message.timestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+        messages.innerHTML += `
+        <div class="message ${messageClass}">
+            <div class="bubble">
+                <strong>${sender}</strong><br>
+                ${message.content}
+                <div class="time">${time}</div>
+            </div>
+        </div>
+    `;
 
         messages.scrollTop = messages.scrollHeight;
     }
@@ -178,6 +255,8 @@
         messages.innerHTML="";
 
         history.forEach(showMessage);
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     }
 
@@ -199,8 +278,34 @@
             }
 
         });
+    function logout(){
 
+        localStorage.removeItem("token");
+        localStorage.removeItem("email");
+
+        window.location.href="login.html";
+    }
+
+    function updateChatHeader() {
+
+        const receiver = document.getElementById("receiver").value;
+        const header = document.getElementById("chatHeader");
+
+        if(receiver.trim() === ""){
+            header.innerHTML = "Select a user to start chatting";
+        }else{
+            header.innerHTML = "Chatting with <b>" + receiver + "</b>";
+        }
+    }
+    function handleKeyPress(event){
+
+        if(event.key === "Enter"){
+            sendMessage();
+        }
+
+    }
 </script>
+
 </body>
 
 </html>

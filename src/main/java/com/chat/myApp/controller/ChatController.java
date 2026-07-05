@@ -23,11 +23,13 @@ public class ChatController {
             @Payload ChatMessage chatMessage
     ) {
 
+        chatMessage.setTimestamp(LocalDateTime.now());
+
         Message message = Message.builder()
                 .senderEmail(chatMessage.getSender())
                 .receiverEmail(chatMessage.getReceiver())
                 .content(chatMessage.getContent())
-                .timestamp(LocalDateTime.now())
+                .timestamp(chatMessage.getTimestamp())
                 .build();
 
         messageRepository.save(message);

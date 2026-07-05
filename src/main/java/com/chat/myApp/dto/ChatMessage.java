@@ -1,6 +1,7 @@
 package com.chat.myApp.dto;
 
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,4 +15,6 @@ public class ChatMessage {
     private String receiver;
 
     private String content;
+
+    private LocalDateTime timestamp;
 }
