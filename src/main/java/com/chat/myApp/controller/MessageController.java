@@ -13,7 +13,6 @@ import java.util.List;
 @RequestMapping("/messages")
 @RequiredArgsConstructor
 public class MessageController {
-
     private final MessageService messageService;
 
     @PostMapping("/send")
@@ -21,9 +20,7 @@ public class MessageController {
             Authentication authentication,
             @RequestBody SendMessageRequest request
     ) {
-
         String senderEmail = authentication.getName();
-
         return messageService.sendMessage(
                 senderEmail,
                 request
@@ -35,7 +32,6 @@ public class MessageController {
             Authentication authentication,
             @PathVariable String receiverEmail
     ) {
-
         return messageService.getChatHistory(
                 authentication.getName(),
                 receiverEmail

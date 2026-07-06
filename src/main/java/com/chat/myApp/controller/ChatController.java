@@ -22,23 +22,19 @@ public class ChatController {
     public void sendMessage(
             @Payload ChatMessage chatMessage
     ) {
-
         chatMessage.setTimestamp(LocalDateTime.now());
-
         Message message = Message.builder()
                 .senderEmail(chatMessage.getSender())
                 .receiverEmail(chatMessage.getReceiver())
                 .content(chatMessage.getContent())
                 .timestamp(chatMessage.getTimestamp())
                 .build();
-
         messageRepository.save(message);
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getReceiver(),
                 "/queue/messages",
                 chatMessage
         );
-
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getSender(),
                 "/queue/messages",

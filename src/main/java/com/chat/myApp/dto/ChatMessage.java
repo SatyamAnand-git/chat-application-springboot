@@ -9,12 +9,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ChatMessage {
-
     private String sender;
-
     private String receiver;
-
     private String content;
-
     private LocalDateTime timestamp;
 }

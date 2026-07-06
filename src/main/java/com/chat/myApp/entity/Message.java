@@ -13,15 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Message {
-
     @Id
     private String id;
-
     private String senderEmail;
-
     private String receiverEmail;
-
     private String content;
-
     private LocalDateTime timestamp;
 }

@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html>
 
+<html lang="en">
 <head>
-
-
     <title>Chat Application</title>
-
     <style>
-
         body {
             font-family: Arial, sans-serif;
             background: #f4f4f4;
@@ -110,10 +106,9 @@
         }
 
     </style>
-
 </head>
+<body>
 <div class="container">
-
     <h2>Real Time Chat</h2>
     <h3 id="loggedUser"></h3>
     <div class="header">
@@ -121,7 +116,7 @@
             Logout
         </button>
     </div>
-
+    <label for="receiver">Receiver</label>
     <input
             id="receiver"
             placeholder="Receiver"
@@ -132,90 +127,80 @@
         Select a user to start chatting
     </div>
     <div id="messages"></div>
+    <label for="message">Message</label>
+
     <input
             id="message"
             placeholder="Type your message..."
             onkeypress="handleKeyPress(event)">
-
     <button onclick="sendMessage()">
-
-        Send
-
+   Send
     </button>
-
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-
 <script>
-
     let stompClient = null;
+    const token = localStorage.getItem("token");
+    const email = localStorage.getItem("email");
+    if (!token || !email) {
+        window.location.href = "login.html";
+    }
 
-    // Connect to WebSocket
     function connect() {
-
         let socket = new SockJS('/chat');
-
         stompClient = Stomp.over(socket);
-
         stompClient.connect(
             {
                 Authorization: "Bearer " + localStorage.getItem("token")
             },
             function () {
 
-                console.log("Connected!");
-
                 stompClient.subscribe("/user/queue/messages", function(message){
-
                     showMessage(JSON.parse(message.body));
-
                 });
 
             }
         );
     }
 
-    // Send Message
     function sendMessage() {
         const sender = localStorage.getItem("email");
         const receiver = document.getElementById("receiver").value;
-        const content = document.getElementById("message").value;
-
+        const content = document.getElementById("message").value.trim();
+        if (receiver === "") {
+            alert("Please enter a receiver.");
+            return;
+        }
+        if(content === ""){
+            return;
+        }
+        if (!stompClient || !stompClient.connected) {
+            alert("Chat server is not connected. Please refresh the page.");
+            return;
+        }
         stompClient.send("/app/chat", {}, JSON.stringify({
-
-            sender: sender,
-            receiver: receiver,
-            content: content
-
+            sender,
+            receiver,
+            content
         }));
-
         document.getElementById("message").value = "";
         document.getElementById("message").focus();
-
     }
 
-    // Display Message
     function showMessage(message) {
-
         const messages = document.getElementById("messages");
-
         const loggedInUser = localStorage.getItem("email");
-
         const sender = message.sender || message.senderEmail;
-
         const messageClass =
             sender === loggedInUser ? "sent" : "received";
-
         let time = "";
-
         if(message.timestamp){
             time = new Date(message.timestamp).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit"
             });
         }
-
         messages.innerHTML += `
         <div class="message ${messageClass}">
             <div class="bubble">
@@ -225,72 +210,55 @@
             </div>
         </div>
     `;
-
         messages.scrollTop = messages.scrollHeight;
     }
-    // Load Chat History
     async function loadHistory() {
-
-        const receiver =
-            document.getElementById("receiver").value;
-
-        if(receiver==="") return;
-
-        const token = localStorage.getItem("token");
-
-        const response = await fetch(
-            "/messages/history/" + receiver,
-            {
-                headers:{
-                    "Authorization":"Bearer " + token
+        const receiver = document.getElementById("receiver").value.trim();
+        if (receiver === "") {
+            document.getElementById("messages").innerHTML = "";
+            return;
+        }
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                "/messages/history/" + receiver,
+                {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
                 }
+            );
+            if (!response.ok) {
+                throw new Error("Failed to load chat history");
             }
-        );
-
-        const history = await response.json();
-
-        const messages =
-            document.getElementById("messages");
-
-        messages.innerHTML="";
-
-        history.forEach(showMessage);
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
+            const history = await response.json();
+            const messages = document.getElementById("messages");
+            messages.innerHTML = "";
+            history.forEach(showMessage);
+            messages.scrollTop = messages.scrollHeight;
+        } catch (error) {
+            console.error("Error loading history:", error);
+            document.getElementById("messages").innerHTML =
+                "<p style='color:red'>Unable to load chat history.</p>";
+        }
     }
 
-    // Connect automatically
     connect();
-
     document.getElementById("loggedUser").innerHTML =
         "Logged in as : " +
         localStorage.getItem("email");
+    function logout() {
+        if (stompClient && stompClient.connected) {
+            stompClient.disconnect(() => {
 
-    document
-        .getElementById("message")
-        .addEventListener("keypress", function(event){
-
-            if(event.key === "Enter"){
-
-                sendMessage();
-
-            }
-
-        });
-    function logout(){
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("email");
-
-        window.location.href="login.html";
+            });
+        }
+        localStorage.clear();
+        window.location.href = "login.html";
     }
-
     function updateChatHeader() {
-
         const receiver = document.getElementById("receiver").value;
         const header = document.getElementById("chatHeader");
-
         if(receiver.trim() === ""){
             header.innerHTML = "Select a user to start chatting";
         }else{
@@ -305,7 +273,5 @@
 
     }
 </script>
-
 </body>
-
 </html>
