@@ -122,6 +122,10 @@ Conversation History Loaded
 
 ## 📷 Screenshots
 
+###  Registration Page
+
+<img width="959" height="535" alt="image" src="https://github.com/user-attachments/assets/071e2216-a7c0-45d2-abb6-2e0343f2101b" />
+
 ### Login Page
 
 <img width="958" height="493" alt="image" src="https://github.com/user-attachments/assets/b13d78f1-1f35-4501-b941-e9ea285bb71c" />
